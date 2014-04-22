@@ -62,9 +62,12 @@ $title = cut_str(db::result( $title_query ),10,"...");
 						<div class='caption_image'>					
 						<?						
 							$imgsrc = x::post_thumbnail($_bo_table, $li['wr_id'], 161, 108);							
-							if ( empty($imgsrc['src']) )  $imgsrc['src'] = null;
-							if( $imgsrc['src'] ) $img = "<img src='$imgsrc[src]'/>";
-							else $img = "<img src='".x::url()."/widget/".$widget_config['name']."/img/no_image.png'/>";
+							if ( empty($imgsrc['src']) ) {
+								$_wr_content = db::result("SELECT wr_content FROM $g5[write_prefix]$_bo_table WHERE wr_id='$li[wr_id]'");
+								$image_from_tag = g::thumbnail_from_image_tag($_wr_content, $_bo_table, 161, 108);
+								if ( empty($image_from_tag) ) $img = "<img src='".x::url()."/widget/".$widget_config['name']."/img/no_image.png'/>";
+								else $img = "<img src='$image_from_tag'/>";
+							} else $img = "<img src='$imgsrc[src]'/>";
 						
 							echo "<div class='img-wrapper'><a href='$li[url]'>".$img."</a></div>";
 							
